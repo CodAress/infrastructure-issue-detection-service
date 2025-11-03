@@ -1,0 +1,46 @@
+# ============================================================================
+# DEPENDENCIAS - Smart Band Edge Service (Detection BC)
+# ============================================================================
+
+# WEB FRAMEWORK
+Flask==2.3.3
+Flask-CORS==4.0.0
+werkzeug==2.3.7
+flasgger==0.9.7.1
+
+# DEEP LEARNING - YOLO
+ultralytics>=8.1.0
+torch>=2.3.0
+torchvision>=0.18.0
+
+# COMPUTER VISION
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# CLOUD STORAGE
+cloudinary==1.33.0
+
+# DATABASE
+peewee>=3.16.0
+
+# HTTP CLIENT
+requests==2.31.0
+urllib3>=1.26.5,<2
+
+# ENVIRONMENT
+python-dotenv==1.0.0
+
+# UTILITIES
+python-dateutil==2.8.2
+pytz==2023.3
+
+# LOGGING
+colorlog==6.7.0
+
+# DEVELOPMENT (opcional)
+# pytest==7.4.2
+# pytest-cov==4.1.0
+# black==23.9.1
+# flake8==6.0.0
+# mypy==1.5.1
