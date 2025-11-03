@@ -1,0 +1,306 @@
+# ==========================================
+# Python & Flask Infrastructure Detection Service
+# ==========================================
+
+# ==========================================
+# 🔐 CREDENCIALES Y SECRETOS (CRÍTICO)
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.env
+secrets/
+credentials/
+
+# ==========================================
+# 🗄️ BASE DE DATOS
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+smart_band.db
+database/
+*.db-journal
+
+# ==========================================
+# 🐍 Python
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ==========================================
+# 🤖 MODELOS DE MACHINE LEARNING
+# ==========================================
+# Modelos entrenados (pueden ser muy grandes)
+#models/*.pt
+#models/*.pth
+#models/*.h5
+#models/*.pb
+#models/*.onnx
+#models/*.tflite
+#*.weights
+
+# EXCEPCIÓN: Mantener el modelo best.pt si es necesario
+# Descomentar la siguiente línea para incluirlo:
+# !models/best.pt
+
+# Checkpoints de entrenamiento
+checkpoints/
+runs/
+logs/training/
+
+# Datasets (pueden ser muy grandes)
+datasets/
+data/raw/
+data/processed/
+*.csv
+*.parquet
+
+# ==========================================
+# ☁️ CLOUDINARY & IMÁGENES TEMPORALES
+# ==========================================
+temp_images/
+uploads/
+downloaded_images/
+*.tmp.jpg
+*.tmp.png
+
+# ==========================================
+# 📝 IDEs y Editores
+# ==========================================
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ==========================================
+# 🖥️ Sistema Operativo
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+# ==========================================
+# 📦 Dependencias y Package Managers
+# ==========================================
+node_modules/
+bower_components/
+package-lock.json
+yarn.lock
+
+# ==========================================
+# 🚀 Deployment & Docker
+# ==========================================
+# Docker
+*.dockerignore
+docker-compose.override.yml
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# ==========================================
+# 📊 Logs y Temporales
+# ==========================================
+*.log
+logs/
+*.out
+*.pid
+*.seed
+*.pid.lock
+tmp/
+temp/
+
+# Flask
+instance/
+.webassets-cache
+
+# ==========================================
+# 🧪 Testing
+# ==========================================
+.pytest_cache/
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# ==========================================
+# 📚 Documentación Generada
+# ==========================================
+docs/_build/
+site/
+
+# ==========================================
+# 🔧 Archivos de Configuración Local
+# ==========================================
+*.local
+local_settings.py
+
+# ==========================================
+# 🎯 Archivos Específicos del Proyecto
+# ==========================================
+# Backups de base de datos
+*.db.backup
+*.sqlite.backup
+
+# Archivos de migración temporal
+migrations/versions/*.pyc
+
+# Cache de YOLO
+yolo_cache/
+
+# Imágenes de prueba (opcional)
+# test_images/
+
+# ==========================================
+# ✅ ARCHIVOS QUE SÍ DEBEN INCLUIRSE
+# ==========================================
+# Asegúrate de NO ignorar estos archivos importantes:
+# !requirements.txt
+# !README.md
+# !LICENSE
+# !.env.example
+# !models/.gitkeep
+# !Dockerfile
+# !docker-compose.yml
+# !.github/
