@@ -27,22 +27,32 @@ jobs:
       packages: write
 
     steps:
-      # 1. Checkout del código
+      # 1. Liberar espacio en disco del runner
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h
+
+      # 2. Checkout del código
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Docker Buildx (para multi-platform)
+      # 3. Setup Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3. Login a Docker Hub
+      # 4. Login a Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4. Extraer metadata (tags, labels)
+      # 5. Extraer metadata (tags, labels)
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -57,7 +67,7 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
-      # 5. Build y Push de imagen Docker
+      # 6. Build y Push de imagen Docker
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -73,7 +83,7 @@ jobs:
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
 
-      # 6. Scan de vulnerabilidades con Trivy
+      # 7. Scan de vulnerabilidades con Trivy
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -83,14 +93,14 @@ jobs:
           severity: 'CRITICAL,HIGH'
         continue-on-error: true
 
-      # 7. Upload de resultados de Trivy
+      # 8. Upload de resultados de Trivy
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
         continue-on-error: true
 
-      # 8. Generar resumen del build
+      # 9. Generar resumen del build
       - name: Generate build summary
         run: |
           echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
