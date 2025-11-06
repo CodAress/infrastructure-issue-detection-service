@@ -6,7 +6,7 @@
 # ==========================================
 # STAGE 1: Builder - Compilar dependencias
 # ==========================================
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 # Evitar preguntas interactivas durante instalación
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -20,8 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     g++ \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear directorio de trabajo
@@ -57,10 +58,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # Instalar solo dependencias de runtime (sin herramientas de compilación)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libgomp1 \
     ca-certificates \
+    curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
