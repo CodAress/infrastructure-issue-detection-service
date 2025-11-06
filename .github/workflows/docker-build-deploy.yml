@@ -1,0 +1,157 @@
+# ==========================================
+# GitHub Actions Workflow - Docker Build & Deploy
+# Construye imagen segura y la sube a Docker Hub
+# ==========================================
+
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/infrastructure-detection-service
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # 1. Checkout del código
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Docker Buildx (para multi-platform)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Login a Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 4. Extraer metadata (tags, labels)
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      # 5. Build y Push de imagen Docker
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+
+      # 6. Scan de vulnerabilidades con Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:latest
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
+      # 7. Upload de resultados de Trivy
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      # 8. Generar resumen del build
+      - name: Generate build summary
+        run: |
+          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Platforms:** linux/amd64, linux/arm64" >> $GITHUB_STEP_SUMMARY
+          echo "**Security:** Bytecode compilation, source files removed" >> $GITHUB_STEP_SUMMARY
+
+  # Job opcional: Test de la imagen
+  test-image:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Pull image
+        run: docker pull ${{ env.IMAGE_NAME }}:latest
+
+      - name: Test image health
+        run: |
+          # Iniciar contenedor
+          docker run -d --name test-container \
+            -e DATABASE_URL=sqlite:///test.db \
+            -e CLOUDINARY_CLOUD_NAME=test \
+            -e CLOUDINARY_API_KEY=test \
+            -e CLOUDINARY_API_SECRET=test \
+            -e YOLO_MODEL_PATH=/app/models/best.pt \
+            -e BACKEND_CLIENT_ID=test \
+            -e BACKEND_API_KEY=test \
+            ${{ env.IMAGE_NAME }}:latest
+
+          # Esperar que el servicio inicie
+          sleep 10
+
+          # Verificar health endpoint
+          docker exec test-container curl -f http://localhost:5000/api/v1/health || exit 1
+
+          # Limpiar
+          docker stop test-container
+          docker rm test-container
+
+      - name: Verify security (no .py files except app.py)
+        run: |
+          echo "🔍 Verificando que no existan archivos .py (excepto app.py)..."
+          PYTHON_FILES=$(docker run --rm ${{ env.IMAGE_NAME }}:latest find /app -name "*.py" ! -name "app.py" | wc -l)
+          
+          if [ "$PYTHON_FILES" -gt 0 ]; then
+            echo "❌ ERROR: Se encontraron archivos .py en la imagen"
+            docker run --rm ${{ env.IMAGE_NAME }}:latest find /app -name "*.py" ! -name "app.py"
+            exit 1
+          fi
+          
+          echo "✅ Verificación exitosa: Solo bytecode (.pyc) en la imagen"
