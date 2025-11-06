@@ -83,6 +83,9 @@ WORKDIR ${APP_HOME}
 # Copiar código de la aplicación (se compilará a bytecode)
 COPY --chown=${APP_USER}:${APP_USER} . .
 
+# Copiar modelo YOLO (crítico para funcionamiento)
+COPY --chown=${APP_USER}:${APP_USER} models/best.pt ${APP_HOME}/models/best.pt
+
 # 🔒 SEGURIDAD: Compilar código Python a bytecode y eliminar .py
 # Esto dificulta la extracción del código fuente
 RUN python -m compileall -b . && \

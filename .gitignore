@@ -134,9 +134,8 @@ cython_debug/
 #models/*.tflite
 #*.weights
 
-# EXCEPCIÓN: Mantener el modelo best.pt si es necesario
-# Descomentar la siguiente línea para incluirlo:
-# !models/best.pt
+# EXCEPCIÓN: Incluir modelo best.pt para deployment
+!models/best.pt
 
 # Checkpoints de entrenamiento
 checkpoints/
