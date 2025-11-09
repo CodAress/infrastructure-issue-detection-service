@@ -57,6 +57,14 @@ swagger_config.update({
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
     "use_cdn": True,
+    "oauth2": {
+        "clientId": "",
+        "clientSecret": "",
+        "realm": "",
+        "appName": "Infrastructure Detection Service API",
+        "scopeSeparator": " ",
+        "additionalQueryStringParams": {}
+    },
     "specs": [
         {
             "endpoint": 'apispec',
@@ -65,8 +73,7 @@ swagger_config.update({
     ]
 })
 
-swagger = Flasgger(app, template=swagger_template, config=swagger_config, 
-                   template_folder='templates/flasgger')
+swagger = Flasgger(app, template=swagger_template, config=swagger_config)
 
 # Registrar blueprints DESPUÉS de Flasgger
 app.register_blueprint(health_api)
