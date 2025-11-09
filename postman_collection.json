@@ -1,0 +1,296 @@
+{
+  "info": {
+    "name": "Infrastructure Detection Service API",
+    "description": "## 🚧 Servicio de Detección de Incidencias de Infraestructura\n\n### Descripción General\n\nAPI REST especializada en la **detección automática de incidencias en infraestructura vial** utilizando tecnología de **Machine Learning** y **Computer Vision**. El servicio procesa imágenes de carreteras y calles para identificar y clasificar diferentes tipos de daños estructurales.\n\n### Capacidades Principales\n\n#### 🔍 Detección Automática\n- **Análisis de imágenes** mediante modelos YOLO (You Only Look Once)\n- **Detección en tiempo real** de baches, grietas y otros defectos\n- **Precisión optimizada** con umbrales de confianza configurables (default: 30%)\n- **Localización exacta** con coordenadas de bounding boxes\n\n#### 📊 Procesamiento Inteligente\n- **Procesamiento individual** de imágenes bajo demanda\n- **Procesamiento por lotes** para múltiples imágenes simultáneas\n- **Anotación automática** de imágenes con detecciones visualizadas\n- **Almacenamiento en la nube** de imágenes procesadas (Cloudinary)\n\n#### 🔐 Seguridad y Control\n- **Autenticación mediante API Keys** para todos los endpoints\n- **Identificación única** de consultas mediante UUIDs\n- **Trazabilidad completa** de todas las operaciones\n- **Registro de timestamps** para auditoría\n\n#### 🎯 Casos de Uso\n\n1. **Inspección de Carreteras**\n   - Identificación automática de baches en imágenes aéreas o terrestres\n   - Generación de reportes de estado de vías\n   - Priorización de mantenimiento basado en severidad\n\n2. **Sistemas de Reporte Ciudadano**\n   - Validación automática de reportes con evidencia fotográfica\n   - Clasificación y categorización de incidencias\n   - Reducción de falsos positivos en reportes manuales\n\n3. **Monitoreo de Infraestructura**\n   - Seguimiento temporal de deterioro en vías\n   - Detección temprana de problemas estructurales\n   - Análisis histórico de condiciones de infraestructura\n\n4. **Integración con Sistemas de Gestión**\n   - API lista para integrarse con sistemas municipales\n   - Procesamiento masivo para análisis de grandes áreas\n   - Exportación de datos para business intelligence\n\n### 📋 Clases de Incidencias Detectadas\n\n- **Potholes (Baches)**: Agujeros o depresiones en el pavimento\n- *Próximamente*: Grietas, fisuras, desprendimientos, etc.\n\n### 🔄 Flujo de Trabajo\n\n1. **Autenticación**: El cliente se autentica con API Key\n2. **Envío de imagen**: Se proporciona URL de imagen y UUID único\n3. **Descarga**: El sistema descarga la imagen desde la URL\n4. **Análisis**: Modelo de ML procesa y detecta incidencias\n5. **Anotación**: Se genera imagen con marcadores visuales\n6. **Almacenamiento**: Imágenes se suben a almacenamiento en la nube\n7. **Respuesta**: Se retorna JSON con detecciones, coordenadas y URLs\n\n### ⚙️ Especificaciones Técnicas\n\n- **Formato de imágenes soportado**: JPG, JPEG, PNG\n- **Modelo de detección**: YOLO v8 optimizado para infraestructura\n- **Tiempo de respuesta promedio**: 1-3 segundos por imagen\n- **Límite de procesamiento por lote**: Configurable por cliente\n- **Almacenamiento**: Cloudinary CDN para alta disponibilidad\n\n### 📚 Documentación Adicional\n\nPara más información sobre la implementación y mejores prácticas, consulta:\n- Repositorio: https://github.com/CodAress/infrastructure-issue-detection-service\n- Guía de Postman: Ver archivo POSTMAN_GUIDE.md en el repositorio",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "IAM - Gestión de Clientes",
+      "item": [
+        {
+          "name": "Verificar Credenciales",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente a verificar",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clients/verify",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "clients", "verify"]
+            },
+            "description": "Verifica que las credenciales del cliente sean válidas y estén activas.\n\n**Headers requeridos:**\n- `X-API-Key`: API Key del cliente\n\n**Respuestas:**\n- `200`: Credenciales válidas\n- `401`: Credenciales inválidas o cliente inactivo"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Información del Cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/clients/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "clients", "{{client_id}}"]
+            },
+            "description": "Obtiene la información de un cliente específico.\n\n**Parámetros de ruta:**\n- `client_id` (string): ID del cliente\n\n**Headers requeridos:**\n- `X-API-Key`: API Key válida\n\n**Respuestas:**\n- `200`: Información del cliente\n- `401`: No autenticado\n- `404`: Cliente no encontrado"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestión de clientes y autenticación mediante API Keys"
+    },
+    {
+      "name": "Detección de Incidencias",
+      "item": [
+        {
+          "name": "Crear Análisis de Incidencia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente autenticado",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"url_imagen\": \"https://ejemplo.com/imagen-carretera.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/detecciones",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "detecciones"]
+            },
+            "description": "Crea una nueva solicitud de análisis de incidencias de infraestructura. El sistema descargará la imagen desde la URL proporcionada y ejecutará el análisis utilizando modelos de detección.\n\n**Parámetros del body:**\n- `uuid_consulta` (string UUID, requerido): UUID generado por el backend principal para identificar la consulta\n- `url_imagen` (string URL, requerido): URL pública de la imagen a analizar (formatos soportados: .jpg, .jpeg, .png)\n\n**Headers requeridos:**\n- `X-API-Key`: API Key del cliente\n\n**Proceso:**\n1. Se valida la autenticación del cliente\n2. Se descarga la imagen desde la URL\n3. Se ejecuta el análisis de detección\n4. Se sube la imagen procesada con anotaciones\n5. Se retornan los resultados\n\n**Respuestas:**\n- `201`: Análisis creado y procesado exitosamente\n- `400`: Datos inválidos (UUID o URL faltante, formato de imagen no soportado)\n- `401`: No autenticado (API Key inválida)\n- `409`: UUID ya existe (consulta duplicada)\n- `500`: Error en el procesamiento"
+          },
+          "response": [
+            {
+              "name": "201 - Análisis Exitoso",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{api_key}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"url_imagen\": \"https://ejemplo.com/imagen.jpg\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/detecciones",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "detecciones"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"url_imagen_original\": \"https://ejemplo.com/imagen.jpg\",\n  \"url_imagen_procesada\": \"https://cloudinary.com/processed/imagen_550e8400.jpg\",\n  \"estado\": \"completado\",\n  \"fecha_creacion\": \"2025-11-08T21:00:00.000Z\",\n  \"fecha_procesamiento\": \"2025-11-08T21:00:05.000Z\",\n  \"detecciones\": [\n    {\n      \"clase\": \"Pothole\",\n      \"confianza\": 0.87,\n      \"bbox\": {\n        \"x_min\": 120,\n        \"y_min\": 250,\n        \"x_max\": 380,\n        \"y_max\": 420\n      }\n    },\n    {\n      \"clase\": \"Pothole\",\n      \"confianza\": 0.92,\n      \"bbox\": {\n        \"x_min\": 500,\n        \"y_min\": 300,\n        \"x_max\": 680,\n        \"y_max\": 450\n      }\n    }\n  ],\n  \"total_detecciones\": 2,\n  \"tiempo_procesamiento_ms\": 1250\n}"
+            }
+          ]
+        },
+        {
+          "name": "Obtener Resultado de Análisis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/detecciones/{{uuid_consulta}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "detecciones", "{{uuid_consulta}}"]
+            },
+            "description": "Obtiene el resultado de un análisis específico mediante su UUID.\n\n**Parámetros de ruta:**\n- `uuid_consulta` (string UUID): UUID de la consulta\n\n**Headers requeridos:**\n- `X-API-Key`: API Key del cliente\n\n**Respuestas:**\n- `200`: Resultado del análisis\n- `401`: No autenticado\n- `404`: Consulta no encontrada"
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Todos los Análisis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/detecciones?limit=10&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "detecciones"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Número máximo de resultados (opcional, default: 50)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Número de resultados a omitir (opcional, default: 0)"
+                }
+              ]
+            },
+            "description": "Lista todos los análisis de incidencias del cliente autenticado con soporte para paginación.\n\n**Query Parameters (opcionales):**\n- `limit` (integer): Número máximo de resultados por página (default: 50, max: 100)\n- `offset` (integer): Número de resultados a omitir (default: 0)\n\n**Headers requeridos:**\n- `X-API-Key`: API Key del cliente\n\n**Respuestas:**\n- `200`: Lista de análisis\n- `401`: No autenticado"
+          },
+          "response": []
+        },
+        {
+          "name": "Procesamiento por Lotes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "description": "API Key del cliente",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultas\": [\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"url_imagen\": \"https://ejemplo.com/imagen1.jpg\"\n    },\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440002\",\n      \"url_imagen\": \"https://ejemplo.com/imagen2.jpg\"\n    },\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440003\",\n      \"url_imagen\": \"https://ejemplo.com/imagen3.jpg\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/detecciones/_batch/procesar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "detecciones", "_batch", "procesar"]
+            },
+            "description": "Procesa múltiples análisis de incidencias en un solo request. Ideal para procesar lotes de imágenes de forma eficiente.\n\n**Parámetros del body:**\n- `consultas` (array, requerido): Lista de consultas a procesar\n  - Cada consulta debe tener:\n    - `uuid_consulta` (string UUID, requerido): UUID único para la consulta\n    - `url_imagen` (string URL, requerido): URL de la imagen a analizar\n\n**Headers requeridos:**\n- `X-API-Key`: API Key del cliente\n\n**Proceso:**\n- Se procesan todas las consultas del lote\n- Si alguna falla, se continúa con las demás\n- Se retorna un resumen con éxitos y fallos\n\n**Respuestas:**\n- `200`: Lote procesado (revisa summary para ver éxitos/fallos)\n- `400`: Datos inválidos (lista vacía, formato incorrecto)\n- `401`: No autenticado"
+          },
+          "response": [
+            {
+              "name": "200 - Lote Procesado",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{api_key}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"consultas\": [\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"url_imagen\": \"https://ejemplo.com/imagen1.jpg\"\n    },\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440002\",\n      \"url_imagen\": \"https://ejemplo.com/imagen2.jpg\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/detecciones/_batch/procesar",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "detecciones", "_batch", "procesar"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"summary\": {\n    \"total\": 2,\n    \"exitosos\": 2,\n    \"fallidos\": 0\n  },\n  \"resultados\": [\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"estado\": \"completado\",\n      \"total_detecciones\": 1\n    },\n    {\n      \"uuid_consulta\": \"550e8400-e29b-41d4-a716-446655440002\",\n      \"estado\": \"completado\",\n      \"total_detecciones\": 3\n    }\n  ],\n  \"tiempo_total_ms\": 3200\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Endpoints para análisis de incidencias de infraestructura mediante procesamiento de imágenes"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://20.109.51.39",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "tu-api-key-aqui",
+      "type": "string"
+    },
+    {
+      "key": "admin_api_key",
+      "value": "admin-api-key-aqui",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "mi-backend-service",
+      "type": "string"
+    },
+    {
+      "key": "uuid_consulta",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    }
+  ]
+}

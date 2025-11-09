@@ -1,0 +1,79 @@
+# ==========================================
+# Docker Compose - Infrastructure Detection Service
+# Para desplegar en Azure VM u otro servidor
+# ==========================================
+
+version: '3.8'
+
+services:
+  detection-service:
+    # Imagen desde Docker Hub (con modelo YOLO incluido)
+    image: codaress/infrastructure-detection-service:latest
+    
+    container_name: infrastructure-detection-service
+    
+    # Reiniciar automáticamente en caso de fallo
+    restart: unless-stopped
+    
+    # Puerto: mapea 80 del host → 5000 del contenedor
+    ports:
+      - "80:5000"
+    
+    # Variables de entorno desde archivo .env
+    env_file:
+      - .env
+    
+    # Volúmenes para persistencia de datos
+    volumes:
+      # Base de datos SQLite (persistente)
+      - ./data:/app/data
+      # Logs de la aplicación
+      - ./logs:/app/logs
+    
+    # Health check para monitorear el servicio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Límites de recursos (ajusta según tu VM)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'      # Máximo 2 CPUs
+          memory: 4G        # Máximo 4GB RAM
+        reservations:
+          cpus: '1.0'      # Mínimo 1 CPU
+          memory: 2G        # Mínimo 2GB RAM
+    
+    # Variables de entorno adicionales (sobreescriben .env)
+    environment:
+      # Ruta de la base de datos (dentro del contenedor)
+      - DATABASE_URL=sqlite:////app/data/smart_band.db
+      # Asegurar que el modelo use la ruta correcta
+      - YOLO_MODEL_PATH=/app/models/best.pt
+      # Zona horaria
+      - TZ=America/Lima
+    
+    # Red personalizada
+    networks:
+      - detection-network
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Red aislada para el servicio
+networks:
+  detection-network:
+    driver: bridge
+
+# Volúmenes nombrados (opcional - para backup fácil)
+volumes:
+  detection-data:
+  detection-logs:
