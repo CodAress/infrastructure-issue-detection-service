@@ -35,21 +35,6 @@ app.register_blueprint(detection_api)
 register_error_handlers(app)
 
 # Configurar Flasgger para documentación Swagger/OpenAPI (DESPUÉS de blueprints)
-swagger_config = {
-    "headers": [],
-    "specs": [
-        {
-            "endpoint": 'apispec',
-            "route": '/api/v1/apispec.json',
-            "rule_filter": lambda rule: True,
-            "model_filter": lambda tag: True,
-        }
-    ],
-    "static_url_path": "/flasgger_static",
-    "swagger_ui": True,
-    "specs_route": "/api/v1/docs"
-}
-
 swagger_template = {
     "swagger": "2.0",
     "info": {
@@ -74,7 +59,20 @@ swagger_template = {
     }
 }
 
-swagger = Flasgger(app, config=swagger_config, template=swagger_template)
+swagger_config = {
+    "headers": [],
+    "specs_route": "/api/v1/docs",
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs": [
+        {
+            "endpoint": 'apispec',
+            "route": '/api/v1/apispec.json',
+        }
+    ]
+}
+
+swagger = Flasgger(app, template=swagger_template, config=swagger_config)
 
 
 def initialize_health_service():
