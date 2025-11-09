@@ -164,9 +164,9 @@ jobs:
             -e CLOUDINARY_API_KEY=test \
             -e CLOUDINARY_API_SECRET=test \
             -e YOLO_MODEL_PATH=/app/models/best.pt \
-            -e BACKEND_CLIENT_ID=test-client \
-            -e BACKEND_API_KEY=test-key-123 \
-            -e BACKEND_CLIENT_NAME=test-backend \
+            -e BACKEND_CLIENT_ID=test-client-github-actions \
+            -e BACKEND_API_KEY=test_key_1234567890abcdefghijklmnopqrstuvwxyz \
+            -e BACKEND_CLIENT_NAME=test-backend-ci \
             ${{ env.IMAGE_NAME }}:latest
 
           # Esperar que el servicio inicie
