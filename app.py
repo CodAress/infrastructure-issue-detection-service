@@ -26,7 +26,15 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Configurar Flasgger para documentación Swagger/OpenAPI
+# Registrar blueprints PRIMERO (antes de Flasgger)
+app.register_blueprint(health_api)
+app.register_blueprint(iam_api)
+app.register_blueprint(detection_api)
+
+# Registrar los manejadores de errores centralizados
+register_error_handlers(app)
+
+# Configurar Flasgger para documentación Swagger/OpenAPI (DESPUÉS de blueprints)
 swagger_config = {
     "headers": [],
     "specs": [
@@ -42,15 +50,31 @@ swagger_config = {
     "specs_route": "/api/v1/docs"
 }
 
-swagger = Flasgger(app, config=swagger_config)
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Infrastructure Detection Service API",
+        "description": "API para detección de incidencias de infraestructura usando YOLO",
+        "version": "1.0.0",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/CodAress/infrastructure-issue-detection-service"
+        }
+    },
+    "host": "20.109.51.39",
+    "basePath": "/",
+    "schemes": ["http"],
+    "securityDefinitions": {
+        "X-API-Key": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header",
+            "description": "API Key para autenticación de clientes"
+        }
+    }
+}
 
-# Registrar blueprints
-app.register_blueprint(health_api)
-app.register_blueprint(iam_api)
-app.register_blueprint(detection_api)
-
-# Registrar los manejadores de errores centralizados
-register_error_handlers(app)
+swagger = Flasgger(app, config=swagger_config, template=swagger_template)
 
 
 def initialize_health_service():
