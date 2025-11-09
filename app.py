@@ -27,7 +27,22 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Configurar Flasgger para documentación Swagger/OpenAPI
-swagger = Flasgger(app)
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'apispec',
+            "route": '/api/v1/apispec.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/api/v1/docs"
+}
+
+swagger = Flasgger(app, config=swagger_config)
 
 # Registrar blueprints
 app.register_blueprint(health_api)
@@ -170,18 +185,18 @@ def initialize_detection_service():
         raise
 
 
-@app.route('/swagger-info')
+@app.route('/api/v1/swagger-info')
 def swagger_info():
     """Información sobre Swagger y documentación."""
     return {
         'message': 'Bienvenido al Servicio de Detección de Incidencias',
         'version': '1.0.0',
-        'swagger_docs': 'http://localhost:5000/api/v1/docs',
-        'swagger_json': 'http://localhost:5000/api/v1/swagger.json'
+        'swagger_docs': '/api/v1/docs',
+        'swagger_json': '/api/v1/apispec.json'
     }, 200
 
 
-@app.route('/info')
+@app.route('/api/v1/info')
 def about_service():
     """Punto final de información del servicio."""
     return {
@@ -191,7 +206,9 @@ def about_service():
         'database': 'SQLite para almacenar consultas de análisis y resultados',
         'endpoints': {
             'documentation': 'GET /api/v1/docs (Swagger UI)',
-            'swagger_json': 'GET /api/v1/swagger.json',
+            'swagger_json': 'GET /api/v1/apispec.json',
+            'swagger_info': 'GET /api/v1/swagger-info',
+            'info': 'GET /api/v1/info',
             'health': 'GET /api/v1/health',
             'health_readiness': 'GET /api/v1/health/readiness (Kubernetes probe)',
             'health_liveness': 'GET /api/v1/health/liveness (Kubernetes probe)',
