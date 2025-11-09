@@ -26,7 +26,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Configurar Flasgger para documentación Swagger/OpenAPI (ANTES de blueprints)
+# Registrar blueprints PRIMERO (antes de Flasgger)
+app.register_blueprint(health_api)
+app.register_blueprint(iam_api)
+app.register_blueprint(detection_api)
+
+# Configurar Flasgger para documentación Swagger/OpenAPI (DESPUÉS de registrar blueprints)
 swagger_template = {
     "swagger": "2.0",
     "info": {
@@ -74,11 +79,6 @@ swagger_config.update({
 })
 
 swagger = Flasgger(app, template=swagger_template, config=swagger_config)
-
-# Registrar blueprints DESPUÉS de Flasgger
-app.register_blueprint(health_api)
-app.register_blueprint(iam_api)
-app.register_blueprint(detection_api)
 
 # Registrar los manejadores de errores centralizados
 register_error_handlers(app)
