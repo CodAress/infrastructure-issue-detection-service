@@ -25,23 +25,23 @@ SWAGGER_CONFIG = {
     "termsOfService": "http://example.com/terms",
     "contact": {
         "name": "Smart Band Detection Service",
-        "url": "http://localhost:5000",
-        "email": "support@smartband.com",
+        "url": "http://detection-issue-service.eastus2.cloudapp.azure.com",
+        "email": "support@smartband.com"
     },
     "license": {
         "name": "MIT",
-        "url": "https://opensource.org/licenses/MIT",
+        "url": "https://opensource.org/licenses/MIT"
     },
     "servers": [
         {
-            "url": "http://localhost:5000",
-            "description": "Servidor Local (Desarrollo)",
+            "url": "http://detection-issue-service.eastus2.cloudapp.azure.com",
+            "description": "Servidor de Producción (Azure VM)"
         },
         {
-            "url": "http://192.168.18.19:5000",
-            "description": "Servidor en Red Local",
-        },
-    ],
+            "url": "http://localhost:5000",
+            "description": "Servidor Local (Desarrollo)"
+        }
+    ]
 }
 
 SECURITY_SCHEMES = {
@@ -49,7 +49,7 @@ SECURITY_SCHEMES = {
         "type": "apiKey",
         "in": "header",
         "name": "X-API-Key",
-        "description": "API Key para autenticación de cliente",
+        "description": "API Key para autenticación de cliente"
     }
 }
 
@@ -57,20 +57,20 @@ SECURITY_SCHEMES = {
 TAGS = {
     "health": {
         "name": "Health",
-        "description": "Endpoints de verificación de salud del servicio",
+        "description": "Endpoints de verificación de salud del servicio"
     },
     "clients": {
         "name": "IAM - Clientes",
-        "description": "Gestión de clientes backend y autenticación",
+        "description": "Gestión de clientes backend y autenticación"
     },
     "detection": {
         "name": "Detection",
-        "description": "Detección de incidencias de infraestructura",
+        "description": "Detección de incidencias de infraestructura"
     },
     "utils": {
         "name": "Utilidades",
-        "description": "Endpoints de utilidad e información",
-    },
+        "description": "Endpoints de utilidad e información"
+    }
 }
 
 # Modelos de respuesta para Swagger

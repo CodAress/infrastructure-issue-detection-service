@@ -14,7 +14,7 @@ Después de importar, configura las variables de la colección (Collection > Var
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
-| `base_url` | `http://20.109.51.39` | URL base del servicio en producción |
+| `base_url` | `http://detection-issue-service.eastus2.cloudapp.azure.com` | URL base del servicio en producción |
 | `api_key` | `your-api-key-here` | API Key del cliente (reemplazar con tu key real) |
 | `client_id` | `your-client-id` | ID del cliente (opcional) |
 | `uuid_consulta` | `550e8400-e29b-41d4-a716-446655440000` | UUID de ejemplo para pruebas |
@@ -261,7 +261,7 @@ Headers:
 
 ```json
 {
-  "base_url": "http://20.109.51.39",
+  "base_url": "http://detection-issue-service.eastus2.cloudapp.azure.com",
   "api_key": "{{TU_API_KEY_REAL}}"
 }
 ```
