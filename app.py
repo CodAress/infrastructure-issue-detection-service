@@ -38,7 +38,7 @@ swagger_template = {
             "url": "https://github.com/CodAress/infrastructure-issue-detection-service"
         }
     },
-    "host": "detection-issue-service.eastus2.cloudapp.azure.com",
+    # No especificar 'host' para que Swagger use el host actual (localhost o DNS de producción)
     "basePath": "/",
     "schemes": ["http"],
     "securityDefinitions": {
