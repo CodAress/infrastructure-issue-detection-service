@@ -131,6 +131,30 @@ jobs:
       - name: Pull image
         run: docker pull ${{ env.IMAGE_NAME }}:latest
 
+      - name: Verify YOLO model is included in image
+        run: |
+          echo "🔍 Verificando que el modelo YOLO esté en la imagen..."
+          
+          # Verificar que el archivo existe
+          if docker run --rm ${{ env.IMAGE_NAME }}:latest ls -lh /app/models/best.pt; then
+            echo "✅ Modelo YOLO encontrado en la imagen"
+            docker run --rm ${{ env.IMAGE_NAME }}:latest ls -lh /app/models/
+          else
+            echo "❌ ERROR: Modelo YOLO NO encontrado"
+            exit 1
+          fi
+
+      - name: Verify Python dependencies
+        run: |
+          echo "🔍 Verificando dependencias Python..."
+          
+          # Verificar que Flask está instalado
+          docker run --rm ${{ env.IMAGE_NAME }}:latest python -c "import flask; print(f'Flask {flask.__version__} instalado')"
+          docker run --rm ${{ env.IMAGE_NAME }}:latest python -c "import torch; print(f'PyTorch {torch.__version__} instalado')"
+          docker run --rm ${{ env.IMAGE_NAME }}:latest python -c "import ultralytics; print('YOLO/Ultralytics instalado')"
+          
+          echo "✅ Todas las dependencias críticas están instaladas"
+
       - name: Test image health
         run: |
           # Iniciar contenedor con logs visibles

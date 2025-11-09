@@ -77,6 +77,10 @@ RUN mkdir -p ${APP_HOME}/models ${APP_HOME}/logs && \
 # Copiar dependencias Python desde builder
 COPY --from=builder --chown=${APP_USER}:${APP_USER} /root/.local /home/${APP_USER}/.local
 
+# Configurar PATH y PYTHONPATH ANTES de compilar
+ENV PATH=/home/${APP_USER}/.local/bin:$PATH \
+    PYTHONPATH=/home/${APP_USER}/.local/lib/python3.11/site-packages:$PYTHONPATH
+
 # Establecer directorio de trabajo
 WORKDIR ${APP_HOME}
 
@@ -91,9 +95,6 @@ COPY --chown=${APP_USER}:${APP_USER} models/best.pt ${APP_HOME}/models/best.pt
 RUN python -m compileall -b . && \
     find . -type f -name '*.py' ! -name 'app.py' -delete && \
     find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
-
-# Configurar PATH para usar paquetes del usuario
-ENV PATH=/home/${APP_USER}/.local/bin:$PATH
 
 # Cambiar a usuario no-root
 USER ${APP_USER}
