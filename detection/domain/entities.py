@@ -128,16 +128,22 @@ class ConsultaAnalisis(AuditableEntity):
         return self.estado == self.PENDIENTE
     
     def to_dict(self) -> dict:
-        """Convierte la entidad a diccionario incluyendo auditoría."""
-        audit_dict = self.to_audit_dict() if hasattr(self, 'to_audit_dict') else {}
-        
-        return {
+        """Convierte la entidad a diccionario excluyendo campos nulos."""
+        result = {
             "uuid_consulta": self.uuid_consulta,
             "url_imagen": self.url_imagen,
             "client_id": self.client_id,
             "estado": self.estado,
-            "resultado": self.resultado.to_dict() if self.resultado else None,
-            "error": self.error_mensaje,
-            "is_deleted": self.is_deleted,
-            **audit_dict  # Incluir campos de auditoría
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
+        
+        # Solo incluir resultado si existe
+        if self.resultado:
+            result["resultado"] = self.resultado.to_dict()
+        
+        # Solo incluir error si existe
+        if self.error_mensaje:
+            result["error"] = self.error_mensaje
+        
+        return result
