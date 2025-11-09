@@ -38,7 +38,6 @@ swagger_template = {
             "url": "https://github.com/CodAress/infrastructure-issue-detection-service"
         }
     },
-    # No especificar 'host' para que Swagger use el host actual (localhost o DNS de producción)
     "basePath": "/",
     "schemes": ["http"],
     "securityDefinitions": {
@@ -57,6 +56,7 @@ swagger_config.update({
     "specs_route": "/api/v1/docs",
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
+    "use_cdn": True,
     "specs": [
         {
             "endpoint": 'apispec',
@@ -65,7 +65,8 @@ swagger_config.update({
     ]
 })
 
-swagger = Flasgger(app, template=swagger_template, config=swagger_config)
+swagger = Flasgger(app, template=swagger_template, config=swagger_config, 
+                   template_folder='templates/flasgger')
 
 # Registrar blueprints DESPUÉS de Flasgger
 app.register_blueprint(health_api)
